@@ -1,31 +1,20 @@
 package ru.svyazhin.MySeconddTestAppSpringBoot.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import ru.svyazhin.MySeconddTestAppSpringBoot.exception.ValidationFailedException;
 
-import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @Primary
 public class RequestValidationService extends ValidationService {
-
     @Override
-    public void isValid(BindingResult bindingResult) throws ValidationFailedException {
+    public  void isValid(BindingResult bindingResult) throws ValidationFailedException {
         if (bindingResult.hasErrors()) {
-
-            String allErrors = bindingResult.getFieldErrors()
-                    .stream()
-                    .map(this::formatFieldError)
-                    .collect(Collectors.joining("; "));
-
-            throw new ValidationFailedException(allErrors);
+            log.info("Ошибка валидации: {}", bindingResult.getFieldErrors());
+            throw new ValidationFailedException(bindingResult.getFieldError().toString());
         }
-    }
-
-    private String formatFieldError(FieldError fe) {
-        return fe.getField() + ": " + fe.getDefaultMessage();
     }
 }
